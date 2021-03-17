@@ -1,0 +1,93 @@
+
+.modal-test {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    margin: 0 auto;
+    text-align: center;
+}
+.input{
+    margin-top: 20px;
+}
+.submit-btn{
+    margin-top: 20px;
+}
+.modal-test-content{
+    position: fixed;
+    width: 30%;
+    height: auto;
+    display:flex;
+    flex-direction: column;
+    background: white;
+    padding: 30px 20px 30px 20px;
+    top: 30%;
+    left: 40%;
+}
+.show{
+    display: block;
+}
+.hide{
+    display: none;
+}
+.container{
+    display: flex;
+    text-align: center;
+    height: auto;
+    flex-direction: column;
+    width: 40%;
+    margin: 0 auto;
+    min-width: 200px;
+}
+.title{
+    font-weight: bold;
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+.todo-list{
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.mg-right{
+    margin-left: auto;
+    margin-right: 10px;
+}
+.open-form {
+    margin-top: 20px;
+}
+.auto-com {
+    width: 300px;
+}
+
+@media only screen and (max-width: 768px) {
+    .modal-test-content{
+        width: 80%;
+        left: 10%;
+    }
+    .container{
+        width: 100%;
+    }
+    .auto-com{
+        width: 200px;
+    }
+}
+
+@media only screen and (min-width: 960px){
+    .modal-test-content{
+        width: 50%;
+        left: 30%
+    }
+}
+@media only screen and (min-width: 1200px){
+    .modal-test-content{
+        width:30%;
+        left: 40%;
+    }
+    .auto-com{
+        width: 300px;
+    }
+}
