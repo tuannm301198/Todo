@@ -1,23 +1,21 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import './styles.less';
 import { Button, AutoComplete } from 'antd';
 import Modal from './modal';
 import EditModal from './editmodal';
 import debounce from 'lodash/debounce';
 
+const list = JSON.parse(localStorage.getItem('list'))
 const Test = () => {
-  const [todos, setTodo] = useState([
-    { value: 'Test1' },
-    { value: 'Test2' },
-    { value: 'Try catch' },
-  ]);
+  const [todos, setTodo] = useState(list);
   const [display, setDisplay] = useState(false);
   const [editModal, setEditModal] = useState(false);
-  // const newVal = JSON.parse(localStorage.getItem('list'));
+  const [itemIndex,setIndex] = useState(0);
 
   useEffect(() => {
     if (!localStorage.getItem('list')) {
       localStorage.setItem('list', JSON.stringify(todos));
+      
     }
   }, [todos]);
 
@@ -25,11 +23,11 @@ const Test = () => {
     const newTodos = [...todos, { value }];
     setTodo(newTodos);
     localStorage.setItem('list', JSON.stringify(newTodos));
+    
   };
   const showEditModal = (i) => {
     setEditModal(true);
-    console.log(todos[i].value);
-    return todos[i].value
+    setIndex(i)
   };
   const hideEditModal = (e: any) => {
     e.preventDefault();
@@ -50,22 +48,37 @@ const Test = () => {
   };
   
   const updateTodos = (index: string) => {
-
-    console.log(index);
+    const EdittedTodos = [...todos]
+    EdittedTodos.splice(itemIndex,1,{value: index})
+    setTodo(EdittedTodos)
+    localStorage.setItem('list', JSON.stringify(EdittedTodos));
   };
+  const debouncedSave = useCallback(
+		debounce(nextValue => setTodo(nextValue), 1000),
+  )
+  const handleChange = event => {
+		const { value: nextValue } = event.target;
+		setTodo(nextValue);
+		// Even though handleChange is created on each render and executed
+		// it references the same debouncedSave that was created initially
+		debouncedSave(nextValue);
+	};
   return (
     <div className="container">
       <div className="modal">
         <div className="title">To do list</div>
         <AutoComplete
+        autoFocus={true}
           allowClear={true}
           className="auto-com"
           options={todos}
           placeholder="Search something"
-          filterOption={(inputValue, option) =>
-      option!.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
-    }
-        />
+          filterOption={false}
+          onSearch={handleChange}
+    //       filterOption={(inputValue, option) =>
+    //   option!.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
+    // }
+        ></AutoComplete>
         <div className="todo-container">
           {todos.map((todo, i: number) => {
             return (
