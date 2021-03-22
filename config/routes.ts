@@ -62,6 +62,12 @@
                 component: './Test'
               },
               {
+                name: 'Store',
+                icon: 'table',
+                path: '/store',
+                component: './Store'
+              },
+              {
                 component: './404',
               },
             ],

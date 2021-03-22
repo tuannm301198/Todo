@@ -1,67 +1,61 @@
 import { useState, useEffect } from 'react';
 import './styles.less';
-import { Button, AutoComplete } from 'antd';
+import { Button, AutoComplete, Input } from 'antd';
 import Modal from './modal';
 import EditModal from './editmodal';
 import debounce from 'lodash/debounce';
-import axios from 'axios';
+import request from 'umi-request';
+import {useRequest} from '@umijs/hooks'
+
+const { Option } = AutoComplete;
+
 const Test = () => {
   const [todos, setTodo] = useState([]);
   const [display, setDisplay] = useState(false);
   const [editModal, setEditModal] = useState(false);
   const [itemIndex, setIndex] = useState(0);
   const [Id, setId] = useState(0);
-  const [newData, setData] = useState([...todos]);
-  const [value, setValue] = useState('');
-  // useEffect(() => {
-  //   if (!localStorage.getItem('list')) {
-  //     localStorage.setItem('list', JSON.stringify(todos));
-  //   }
-  // }, [todos]);
+  const [newData, setData] = useState([]);
+  // const [value, setValue] = useState('');
+
   useEffect(async () => {
-    await axios
+    await request
       .get('https://reqres.in/api/users?page=2')
       .then((res) => {
-        setTodo(res.data.data);
+        setTodo(res.data);
+        setData([...todos]);
       })
       .catch((err) => console.log(err));
   }, []);
+
   const showDisplay = (e) => {
     setDisplay(true);
     e.preventDefault();
-    console.log(todos);
-    
   };
-  const newArr = [...todos].map(item => {
-    delete item.id;
-    delete item.avatar;
-    delete item.email;
-    delete item.last_name;
-  })
   const hideDisplay = (e) => {
     setDisplay(false);
     e.preventDefault();
+    console.log(newData);
   };
   const showEditModal = (id: number, index) => {
     setEditModal(true);
     setIndex(index);
     setId(id);
-    console.log(newArr);
+    console.log(newData);
   };
   const hideEditModal = (e: any) => {
     e.preventDefault();
     setEditModal(false);
   };
-  const addTodos = async (value: string) => {
-    await axios.post('https://reqres.in/api/users?', { first_name: value }).then((res) => {
-      const newVal = res.data.first_name;
-      const newTodos = [...todos, { first_name: newVal }];
-
+  const addTodos = async (val: string) => {
+    const newTodos = [...todos, { first_name: val }];
+    await request.post('https://reqres.in/api/users', { data: { first_name: val } }).then((res) => {
+      console.log(res);
       setTodo(newTodos);
     });
   };
   const removeTodos = async (i: number) => {
-    await axios
+    await request
       .delete(`https://reqres.in/api/users/${Id}`)
       .then((res) => {
         const newTodos = [...todos];
@@ -71,10 +65,9 @@ const Test = () => {
       })
       .catch((err) => console.log(err));
   };
-
   const updateTodos = async (index: string) => {
     const EdittedTodos = [...todos];
-    await axios
+    await request
       .patch(`https://reqres.in/api/users/${Id}`, { first_name: index })
       .then((res) => {
         EdittedTodos.splice(itemIndex, 1, { first_name: index });
@@ -83,14 +76,16 @@ const Test = () => {
       .catch((err) => console.log(err));
     setTodo(EdittedTodos);
   };
-  const search = (val) => {
-    setValue(val);
-    const filtered = todos.findIndex((x) => x.value == val);
+  const search = (val: string) => {
+    const filtered = todos.findIndex((x) => x.first_name == val);
+    console.log(filtered);
     if (filtered !== -1) {
       setData([{ first_name: val }]);
     } else setData(todos);
   };
-
+  // const {data, loading} = useRequest(() => updateTodos(todos), {
+  //   refreshDeps: [todos]
+  // } )
   //
   return (
     <div className="container">
@@ -100,17 +95,21 @@ const Test = () => {
           autoFocus={true}
           allowClear={true}
           className="auto-com"
-          options={todos}
           placeholder="Search something"
           onSearch={debounce(search, 1000)}
-          // onSearch={debounce(search,2000)}
           notFoundContent="Nothing was found"
           //     filterOption={(inputValue, option) =>
           // option!.value.toUpperCase().indexOf(inputValue.toUpperCase())   !== -1
           // }
-        ></AutoComplete>
+        >
+          {newData.map((item: array) => (
+            <Option key={item.id} value={item.first_name}>
+              {item.first_name}
+            </Option>
+          ))}
+        </AutoComplete>
         <div className="todo-container">
-          {todos.map((todo, i: number) => {
+          {todos.map((todo: object, i: number) => {
             return (
               <div className="todo-list" key={i}>
                 <div className="todo-item">{todo.first_name}</div>
