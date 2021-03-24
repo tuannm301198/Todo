@@ -12,28 +12,54 @@ export const ACTION = {
 
 function CartReducer(state, action) {
   const newState = [...state];
-  const productIndex = newState.findIndex((val) => val.id == action.payload.id);
+  // const productIndex = newState.findIndex((val) => val.id == action.payload.id);
 
   switch (action.type) {
     case ACTION.ADD_TO_CART:
-      if (productIndex < 0) {
-        newState.push(action.payload);
-      } else newState[productIndex].quantity++;
-      return newState;
+      //   console.log(state,newState);
+        
+      // if (productIndex < 0) {
+      //   newState.push(action.payload);
+      // } else newState[productIndex].quantity++;
+      
+      // return newState;
+      return addToCart(action.payload, state)
+      
     case ACTION.INCREMENT:
-      newState[action.payload.idx].quantity++;
-
-      return newState;
+      // newState[action.payload.idx].quantity++;
+      // return newState;
+      return Increment(action.payload.idx,state)
     case ACTION.DECREMENT:
       if (newState[action.payload.idx].quantity > 1) newState[action.payload.idx].quantity--;
       else return newState.filter((item) => item.id !== action.payload.id);
       return newState;
     case ACTION.REMOVE_FROM_CART:
-      return newState.filter((item) => item.id !== action.payload);
+      // return newState.filter((item) => item.id !== action.payload);
+      return removeFromCart(action.payload, state)
     default:
       return;
   }
 }
+
+function Increment (index,state) {
+  const updatedCart = [...state];
+  return updatedCart[index].quantity++;
+}
+function removeFromCart(id,state) {
+  const updatedCart = [...state];
+  return updatedCart.filter(item => item.id !== id)
+}
+export function addToCart (product,state) {
+  console.log(product);
+  const updatedCart = [...state];
+  const updatedCartIndex = updatedCart.findIndex(item => item.id === product.id)
+  if (updatedCartIndex < 0) {
+    updatedCart.push(product)
+  }
+  else updatedCart[updatedCartIndex].quantity++;
+  return updatedCart
+}
+
 const Store = () => {
   const [cart, dispatch] = useReducer(CartReducer, initCart);
   const [value, setValue] = useState('');
@@ -43,11 +69,17 @@ const Store = () => {
 
     return total;
   };
-  
+  function addToCart(product) {
+  dispatch({type: ACTION.ADD_TO_CART, payload: product})
+
+  }
+  function removeFromCart(id) {
+    dispatch({type:ACTION.REMOVE_FROM_CART, payload:id})
+  }
   return (
     <div>
       <div className="d-flex flex-row">
-        <ItemList dispatch={dispatch} />
+        <ItemList addToCart={addToCart} />
         <SearchBar onChange={e => setValue(e.target.value)} />
         <div>
           {cart && <div>Total value {Total()}</div>}
@@ -79,7 +111,7 @@ const Store = () => {
                     Subtract
                   </button>
                   <button
-                    onClick={() => dispatch({ type: ACTION.REMOVE_FROM_CART, payload: item.id })}
+                    onClick={removeFromCart(item.id)}
                   >
                     Remove
                   </button>

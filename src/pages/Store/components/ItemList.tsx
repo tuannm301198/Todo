@@ -7,7 +7,7 @@ const items = [
   { id: 3, name: 'Meat', price: 130000 },
 ];
 
-export const ItemList = ({ dispatch }) => {
+export const ItemList = ({ dispatch,addToCart }) => {
   return (
     <div>
       {items.map((item) => (
@@ -16,15 +16,18 @@ export const ItemList = ({ dispatch }) => {
           <div>Price: {item.price}</div>
           <div>
             <button
-              onClick={()=>dispatch({
-                type: ACTION.ADD_TO_CART,
-                payload: {
-                  id: item.id,
-                  name: item.name,
-                  price: item.price,
-                  quantity: 1,
-                },
-              })}
+              onClick={
+                () => addToCart(item)
+              //   =>dispatch({
+              //   type: ACTION.ADD_TO_CART,
+              //   payload: {
+              //     id: item.id,
+              //     name: item.name,
+              //     price: item.price,
+              //     quantity: 1,
+              //   },
+              // })
+            }
             >
               Add
             </button>
