@@ -1,10 +1,9 @@
-import React from 'react'
-
-export const SearchBar = (props) => {
+export const SearchBar = ({onChange} : any) => {
+    
     return (
         <div>
             <form onSubmit={e => e.preventDefault()}>
-                <input value={props.value} onChange={props.onChange}/>
+                <input onChange={onChange}/>
             </form>
         </div>
     )

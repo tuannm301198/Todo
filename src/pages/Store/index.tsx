@@ -1,123 +1,111 @@
-import React, { useState, useReducer } from 'react';
+import React , { useState, useReducer } from 'react';
 import { SearchBar } from './components/SearchBar';
 import { ItemList } from './components/ItemList';
 import './styles.css';
-const initCart = [];
 export const ACTION = {
   ADD_TO_CART: 'add_to_cart',
   REMOVE_FROM_CART: 'remove_from_cart',
   INCREMENT: 'increment',
   DECREMENT: 'decrement',
 };
-
-function CartReducer(state, action) {
+function CartReducer(state:any, action:{type: string, payload:any }) {
   const newState = [...state];
-  // const productIndex = newState.findIndex((val) => val.id == action.payload.id);
-
   switch (action.type) {
+    
     case ACTION.ADD_TO_CART:
-      //   console.log(state,newState);
-        
-      // if (productIndex < 0) {
-      //   newState.push(action.payload);
-      // } else newState[productIndex].quantity++;
-      
-      // return newState;
-      return addToCart(action.payload, state)
-      
+      console.log(action);
+      return addToCart(action.payload, state);
     case ACTION.INCREMENT:
-      // newState[action.payload.idx].quantity++;
-      // return newState;
-      return Increment(action.payload.idx,state)
+      return Increment(action.payload.idx, state);
     case ACTION.DECREMENT:
-      if (newState[action.payload.idx].quantity > 1) newState[action.payload.idx].quantity--;
-      else return newState.filter((item) => item.id !== action.payload.id);
-      return newState;
+      return Decrement(action.payload, state);
     case ACTION.REMOVE_FROM_CART:
-      // return newState.filter((item) => item.id !== action.payload);
-      return removeFromCart(action.payload, state)
+      return removeFromCart(action.payload, state);
     default:
-      return;
+      return newState;
   }
 }
+interface typeOf {
+  idx: number,
+  id: number,
+  quantity: number,
+  name: string,
+}
 
-function Increment (index,state) {
+function Decrement(product: typeOf, state:Array<{id: number,quantity: number}>) {
   const updatedCart = [...state];
-  return updatedCart[index].quantity++;
+  if (updatedCart[product.idx].quantity > 1) {
+    updatedCart[product.idx].quantity--;
+  } else return updatedCart.filter((item) => item.id !== product.id);
+  return updatedCart;
 }
-function removeFromCart(id,state) {
+function Increment(index:number, state:Array<{id: number,quantity: number}>) {
   const updatedCart = [...state];
-  return updatedCart.filter(item => item.id !== id)
+  updatedCart[index].quantity++;
+  return updatedCart;
 }
-export function addToCart (product,state) {
-  console.log(product);
+export function addToCart(product:typeOf, state:Array<{id: number,quantity: number}>) {
   const updatedCart = [...state];
-  const updatedCartIndex = updatedCart.findIndex(item => item.id === product.id)
+  const updatedCartIndex = updatedCart.findIndex((item) => item.id === product.id);
   if (updatedCartIndex < 0) {
-    updatedCart.push(product)
-  }
-  else updatedCart[updatedCartIndex].quantity++;
-  return updatedCart
+    updatedCart.push(product);
+  } else updatedCart[updatedCartIndex].quantity++;
+  return updatedCart;
 }
-
+function removeFromCart(product: typeOf, state:Array<{id: number,quantity: number}>) {
+  const updatedCart = [...state];
+  // updatedCart[product.idx].quantity = 1;
+  return updatedCart.filter((item) => item.id !== product.id);
+}
 const Store = () => {
-  const [cart, dispatch] = useReducer(CartReducer, initCart);
+  const [cart, dispatch] = useReducer(CartReducer, []);
   const [value, setValue] = useState('');
   const Total = () => {
     let total = 0;
     cart.map((item) => (total += item.price * item.quantity));
-
     return total;
   };
-  function addToCart(product) {
-  dispatch({type: ACTION.ADD_TO_CART, payload: product})
+  function addToCart(product:object) {
+    dispatch({ type: ACTION.ADD_TO_CART, payload: product });
+    console.log(product);
+    
+  }
+  function removeFromCart(product:object) {
+    dispatch({ type: ACTION.REMOVE_FROM_CART, payload: product });
+    
+  }
+  function Increment(product:object) {
+    dispatch({ type: ACTION.INCREMENT, payload: product });
+  }
+  function Decrement(product:object) {
+    dispatch({ type: ACTION.DECREMENT, payload: product });
+  }
 
-  }
-  function removeFromCart(id) {
-    dispatch({type:ACTION.REMOVE_FROM_CART, payload:id})
-  }
   return (
     <div>
       <div className="d-flex flex-row">
         <ItemList addToCart={addToCart} />
-        <SearchBar onChange={e => setValue(e.target.value)} />
+        <SearchBar onChange={(e: React.ChangeEvent<HTMLInputElement>) => setValue(e.target.value)} />
         <div>
           {cart && <div>Total value {Total()}</div>}
           <p>Cart Detail:</p>
-          {cart && cart.filter(val=> val.name.toLowerCase().includes(value.toLowerCase())).map((item, idx) => {
-              return (
-                <div key={item.id}>
-                  <button
-                    onClick={() =>
-                      dispatch({
-                        type: ACTION.INCREMENT,
-                        payload: {
-                          idx: idx,
-                          id: item.id,
-                        },
-                      })
-                    }
-                  >
-                    Add
-                  </button>
-                  <p>Item: {item.name}</p>
-                  <p>Price: {item.price}</p>
-                  <p>Quantity:{item.quantity}</p>
-                  <button
-                    onClick={() =>
-                      dispatch({ type: ACTION.DECREMENT, payload: { idx: idx, id: item.id } })
-                    }
-                  >
-                    Subtract
-                  </button>
-                  <button
-                    onClick={removeFromCart(item.id)}
-                  >
-                    Remove
-                  </button>
-                </div>
-              );
-            })}
+          {cart &&
+            cart
+              .filter((val) => val.name.toLowerCase().includes(value.toLowerCase()))
+              .map((item, idx) => {
+                return (
+                  <div key={item.id}>
+                    <button onClick={() => Increment({ id: item.id, idx: idx })}>Add</button>
+                    <p>Item: {item.name}</p>
+                    <p>Price: {item.price}</p>
+                    <p>Quantity: {item.quantity}</p>
+                    <button onClick={() => Decrement({ idx: idx, id: item.id })}>Subtract</button>
+                    <button onClick={() => removeFromCart({ id: item.id, idx: idx })}>
+                      Remove
+                    </button>
+                  </div>
+                );
+              })}
         </div>
       </div>
     </div>
