@@ -7,3 +7,6 @@
 .flex-column{
     flex-direction: column;
 }
+.total {
+    text-align: center;
+}

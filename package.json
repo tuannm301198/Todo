@@ -93,7 +93,7 @@
     "gh-pages": "^3.0.0",
     "jsdom-global": "^3.0.2",
     "lint-staged": "^10.0.0",
-    "mockjs": "^1.0.1-beta3",
+    "mockjs": "^1.1.0",
     "prettier": "^2.0.1",
     "puppeteer-core": "^8.0.0",
     "stylelint": "^13.0.0",
