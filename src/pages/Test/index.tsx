@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
 import './styles.less';
-import { Button, AutoComplete, Input } from 'antd';
+import { Button, AutoComplete} from 'antd';
 import Modal from './modal';
 import EditModal from './editmodal';
 import debounce from 'lodash/debounce';
 import request from 'umi-request';
-import {useRequest} from '@umijs/hooks'
 
 const { Option } = AutoComplete;
 
@@ -83,10 +82,7 @@ const Test = () => {
       setData([{ first_name: val }]);
     } else setData(todos);
   };
-  // const {data, loading} = useRequest(() => updateTodos(todos), {
-  //   refreshDeps: [todos]
-  // } )
-  //
+
   return (
     <div className="container">
       <div className="modal">
@@ -98,9 +94,7 @@ const Test = () => {
           placeholder="Search something"
           onSearch={debounce(search, 1000)}
           notFoundContent="Nothing was found"
-          //     filterOption={(inputValue, option) =>
-          // option!.value.toUpperCase().indexOf(inputValue.toUpperCase())   !== -1
-          // }
+         
         >
           {newData.map((item: array) => (
             <Option key={item.id} value={item.first_name}>

@@ -77,7 +77,6 @@ const handleRemove = async (selectedRows: TableListItem[]) => {
     return false;
   }
 };
-
 const TableList: React.FC = () => {
   /** 新建窗口的弹窗 */
   const [createModalVisible, handleModalVisible] = useState<boolean>(false);

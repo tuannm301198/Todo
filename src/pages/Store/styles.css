@@ -10,3 +10,6 @@
 .total {
     text-align: center;
 }
+.cap {
+    text-transform: capitalize;
+}

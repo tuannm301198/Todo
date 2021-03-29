@@ -68,6 +68,12 @@
                 component: './Store'
               },
               {
+                name: 'Promise',
+                icon: 'crown',
+                path: '/promise',
+                component: './Promise'
+              },
+              {
                 component: './404',
               },
             ],

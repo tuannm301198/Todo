@@ -1,4 +1,4 @@
-import { useState, useReducer } from 'react';
+import {useReducer } from 'react';
 import { ItemList } from './components/ItemList';
 import './styles.css';
 import request from 'umi-request';
@@ -12,6 +12,8 @@ export const ACTION = {
   INCREMENT: 'increment',
   DECREMENT: 'decrement',
 };
+
+//reducer
 function CartReducer(state: any, action: { type: string; payload: any }) {
   switch (action.type) {
     case ACTION.ADD_TO_CART:
@@ -33,6 +35,7 @@ interface typeOf {
   name: string;
   price: number;
 }
+//handle logic
 function Decrement(product: typeOf, state: Array<{ id: number; quantity: number }>) {
   const updatedCart = [...state];
   request
@@ -45,6 +48,7 @@ function Decrement(product: typeOf, state: Array<{ id: number; quantity: number 
     return updatedCart.filter((item) => item.id !== product.id);
   }
 }
+
 function Increment(index: number, state: Array<{ id: number; quantity: number }>) {
   const updatedCart = [...state];
   request
@@ -53,6 +57,7 @@ function Increment(index: number, state: Array<{ id: number; quantity: number }>
   updatedCart[index].quantity++;
   return updatedCart;
 }
+
 export function addToCart(product: typeOf, state: Array<{ id: number; quantity: number }>) {
   console.log(product);
   const updatedCart = [...state];
@@ -68,6 +73,7 @@ export function addToCart(product: typeOf, state: Array<{ id: number; quantity: 
     .catch((err) => alert(err));
   return updatedCart; 
 }
+
 function removeFromCart(product: typeOf, state: Array<{ id: number; quantity: number }>) {
   request.delete(`${url}${product.id}`).catch((err) => {
     alert(err);
@@ -75,12 +81,10 @@ function removeFromCart(product: typeOf, state: Array<{ id: number; quantity: nu
   return state.filter((item) => item.id !== product.id);
 }
 
+//main page
 const Store = () => {
   const [cart, dispatch] = useReducer(CartReducer, []);
-  // const [value, setValue] = useState('');
-  // const [searchValue,setSearchValue] = useState('')
-  // const [searchedColumn,setSearchedColumn] = useState('')
- 
+  
   function addToCart(product: object) {
     dispatch({ type: ACTION.ADD_TO_CART, payload: product });
   }
@@ -125,7 +129,7 @@ const Store = () => {
             }}
           >
             <Column title="Id" dataIndex="id" />
-            <Column title="Name" dataIndex="name" />
+            <Column title="Name" dataIndex="name" className='cap'/>
             <Column title="Price" dataIndex="price" />
             <Column title="Quantity" dataIndex="quantity"/>
             <Column
@@ -150,32 +154,7 @@ const Store = () => {
               )}
             />
           </Table>
-          {/* {cart && <div>Total value {Total()}</div>}
-          <p>Cart Detail:</p> */}
-          {/* {cart &&
-            cart
-              .filter((val: { name: string }) =>
-                val?.name.toLowerCase().includes(value.toLowerCase()),
-              )
-              .map(
-                (
-                  item: { name: string; id: number; price: number; quantity: number },
-                  idx: number,
-                ) => {
-                  return (
-                    <div key={item.id}>
-                      <button onClick={() => Increment({ id: item.id, idx: idx })}>Add</button>
-                      <p>Item: {item.name}</p>
-                      <p>Price: {item.price}</p>
-                      <p>Quantity: {item.quantity}</p>
-                      <button onClick={() => Decrement({ idx: idx, id: item.id })}>Subtract</button>
-                      <button onClick={() => removeFromCart({ id: item.id, idx: idx })}>
-                        Remove
-                      </button>
-                    </div>
-                  );
-                },
-              )} */}
+          
         </div>
       </div>
     </div>
