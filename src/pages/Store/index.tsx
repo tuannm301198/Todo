@@ -3,7 +3,7 @@ import { ItemList } from './components/ItemList';
 import './styles.css';
 import { useRequest } from '@umijs/hooks';
 import request from 'umi-request';
-import { Table, Typography, Button } from 'antd';
+import { Table, Typography, Button,message } from 'antd';
 const url = 'https://reqres.in/api/items/';
 const { Text } = Typography;
 const { Column } = Table;
@@ -36,7 +36,11 @@ interface typeOf {
   name: string;
   price: number;
 }
+
 //handle logic
+
+
+
 function Decrement(product: typeOf, state: Array<{ id: number; quantity: number }>) {
   const updatedCart = [...state];
   request
@@ -60,17 +64,16 @@ function Increment(index: number, state: Array<{ id: number; quantity: number }>
 }
 
 export function addToCart(product: typeOf, state: Array<{ id: number; quantity: number }>) {
-  console.log(product);
   const updatedCart = [...state];
   const updatedCartIndex = updatedCart.findIndex((item) => item.id === product.id);
   if (updatedCartIndex < 0) {
     updatedCart.push({ ...product, quantity: 1 });
+    message.success(`Successfully added ${product.name.toUpperCase()} to cart`)
   } else {
     updatedCart[updatedCartIndex].quantity++;
   }
   request
     .post(url, { data: { id: product.id, name: product.name, year: product.price } })
-
     .catch((err) => alert(err));
   return updatedCart;
 }
@@ -79,13 +82,22 @@ function removeFromCart(product: typeOf, state: Array<{ id: number; quantity: nu
   request.delete(`${url}${product.id}`).catch((err) => {
     alert(err);
   });
+  message.warn(`Removed ${product.name.toUpperCase()} from cart`)
   return state.filter((item) => item.id !== product.id);
 }
+// async function getAction(state){
+//   return new Promise((resolve) => {
+//     setTimeout(() => {
+//       resolve(CartReducer(state));
+//     }, 5000);
+//   });
+// }
 
 //main page
 const Store = () => {
   const [cart, dispatch] = useReducer(CartReducer, []);
-  // const {loading,error} = useRequest(CartReducer)
+  // const {data,loading,error} = useRequest(() => getAction(cart), {refreshDeps: [cart]})
+  
   function addToCart(product: object) {
     dispatch({ type: ACTION.ADD_TO_CART, payload: product });
   }
@@ -151,7 +163,7 @@ const Store = () => {
               title="Action"
               key="action"
               render={(text) => (
-                <Button onClick={() => removeFromCart({ id: text.id })}>Remove</Button>
+                <Button onClick={() => removeFromCart({ id: text.id, name: text.name })}>Remove</Button>
               )}
             />
           </Table>

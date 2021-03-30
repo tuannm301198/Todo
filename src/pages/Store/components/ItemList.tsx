@@ -14,7 +14,7 @@ function getList() {
           .then((json) => {
             return json.data;
           })
-          .catch((err) => console.error(err)),
+          .catch((err) => alert(err)),
       );
     }, 1000);
   });
@@ -31,6 +31,7 @@ export const ItemList = ({ addToCart }: any) => {
       <Spin/>
     </div>;
   }
+
   return (
     <div>
       <Table dataSource={data} rowKey={(key) => key.id} bordered>
