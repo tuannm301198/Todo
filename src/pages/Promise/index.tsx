@@ -1,21 +1,18 @@
-import React from 'react'
-
+import React from 'react';
 
 const Promise = () => {
-    const [count,setCount] = React.useState(0)
-    const day = new Date().toString()
-    console.log(day);
-    function counting () {
-        setCount(count+1)
-    }
-    
-    return (
-        <div>
-            <h3>Test Promise</h3>
-            <p>{count}</p>
-            <p>{day}</p>
-        </div>
-    )
-}
+  const day = new Date().toString();
+  console.log(day);
+  const today = Date.now();
 
-export default Promise
+  let url = new URL('https://chat.zalo.me/');
+  console.log(url);
+  return (
+    <div>
+      <p>{day}</p>
+      <p>{today}</p>
+    </div>
+  );
+};
+
+export default Promise;

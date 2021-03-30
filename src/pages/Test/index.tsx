@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import './styles.less';
-import { Button, AutoComplete} from 'antd';
+import { Button, AutoComplete } from 'antd';
 import Modal from './modal';
 import EditModal from './editmodal';
 import debounce from 'lodash/debounce';
@@ -94,7 +94,6 @@ const Test = () => {
           placeholder="Search something"
           onSearch={debounce(search, 1000)}
           notFoundContent="Nothing was found"
-         
         >
           {newData.map((item: array) => (
             <Option key={item.id} value={item.first_name}>

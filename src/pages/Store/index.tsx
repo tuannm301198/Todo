@@ -1,11 +1,12 @@
-import {useReducer } from 'react';
+import { useReducer } from 'react';
 import { ItemList } from './components/ItemList';
 import './styles.css';
+import { useRequest } from '@umijs/hooks';
 import request from 'umi-request';
-import {Table,Typography, Button} from 'antd'
+import { Table, Typography, Button } from 'antd';
 const url = 'https://reqres.in/api/items/';
-const {Text} = Typography;
-const {Column} = Table;
+const { Text } = Typography;
+const { Column } = Table;
 export const ACTION = {
   ADD_TO_CART: 'add_to_cart',
   REMOVE_FROM_CART: 'remove_from_cart',
@@ -71,7 +72,7 @@ export function addToCart(product: typeOf, state: Array<{ id: number; quantity: 
     .post(url, { data: { id: product.id, name: product.name, year: product.price } })
 
     .catch((err) => alert(err));
-  return updatedCart; 
+  return updatedCart;
 }
 
 function removeFromCart(product: typeOf, state: Array<{ id: number; quantity: number }>) {
@@ -84,7 +85,7 @@ function removeFromCart(product: typeOf, state: Array<{ id: number; quantity: nu
 //main page
 const Store = () => {
   const [cart, dispatch] = useReducer(CartReducer, []);
-  
+  // const {loading,error} = useRequest(CartReducer)
   function addToCart(product: object) {
     dispatch({ type: ACTION.ADD_TO_CART, payload: product });
   }
@@ -106,8 +107,8 @@ const Store = () => {
       <div className="d-flex flex-column">
         <ItemList addToCart={addToCart} />
         <div>
-         
-          <Table locale={{emptyText:'Empty Cart'}}
+          <Table
+            locale={{ emptyText: 'Empty Cart' }}
             dataSource={cart}
             bordered
             rowKey={(item) => item.id}
@@ -129,20 +130,20 @@ const Store = () => {
             }}
           >
             <Column title="Id" dataIndex="id" />
-            <Column title="Name" dataIndex="name" className='cap'/>
+            <Column title="Name" dataIndex="name" className="cap" />
             <Column title="Price" dataIndex="price" />
-            <Column title="Quantity" dataIndex="quantity"/>
+            <Column title="Quantity" dataIndex="quantity" />
             <Column
               title="Action"
               key="action"
-              render={(text, record,index) => (
-                <Button onClick={() => Increment({ id: text.id, idx: index })}>+</Button>
+              render={(text, record, index) => (
+                <Button  onClick={() => Increment({ id: text.id, idx: index })}>+</Button>
               )}
             />
             <Column
               title="Action"
               key="action"
-              render={(text,record,index) => (
+              render={(text, record, index) => (
                 <Button onClick={() => Decrement({ id: text.id, idx: index })}>-</Button>
               )}
             />
@@ -150,11 +151,10 @@ const Store = () => {
               title="Action"
               key="action"
               render={(text) => (
-                <Button onClick={() => removeFromCart({ id: text.id})}>Remove</Button>
+                <Button onClick={() => removeFromCart({ id: text.id })}>Remove</Button>
               )}
             />
           </Table>
-          
         </div>
       </div>
     </div>

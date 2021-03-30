@@ -8,12 +8,11 @@ import type { ConnectState } from '@/models/connect';
 import Avatar from './AvatarDropdown';
 import HeaderSearch from '../HeaderSearch';
 import styles from './index.less';
-
+import NoticeIconView from './NoticeIconView';
 export type GlobalHeaderRightProps = {
   theme?: ProSettings['navTheme'] | 'realDark';
 } & Partial<ConnectProps> &
   Partial<ProSettings>;
-
 const ENVTagColor = {
   dev: 'orange',
   test: 'green',
@@ -35,7 +34,10 @@ const GlobalHeaderRight: React.SFC<GlobalHeaderRightProps> = (props) => {
         placeholder="站内搜索"
         defaultValue="umi ui"
         options={[
-          { label: <a href="https://umijs.org/zh/guide/umi-ui.html">umi ui</a>, value: 'umi ui' },
+          {
+            label: <a href="https://umijs.org/zh/guide/umi-ui.html">umi ui</a>,
+            value: 'umi ui',
+          },
           {
             label: <a href="next.ant.design">Ant Design</a>,
             value: 'Ant Design',
@@ -48,8 +50,7 @@ const GlobalHeaderRight: React.SFC<GlobalHeaderRightProps> = (props) => {
             label: <a href="https://prolayout.ant.design/">Pro Layout</a>,
             value: 'Pro Layout',
           },
-        ]}
-        // onSearch={value => {
+        ]} // onSearch={value => {
         //   //console.log('input', value);
         // }}
       />
@@ -66,7 +67,9 @@ const GlobalHeaderRight: React.SFC<GlobalHeaderRightProps> = (props) => {
           <QuestionCircleOutlined />
         </a>
       </Tooltip>
-      <Avatar />
+      <NoticeIconView />
+      <NoticeIconView />
+      <Avatar menu />
       {REACT_APP_ENV && (
         <span>
           <Tag color={ENVTagColor[REACT_APP_ENV]}>{REACT_APP_ENV}</Tag>

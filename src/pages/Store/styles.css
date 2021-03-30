@@ -1,15 +1,23 @@
 .d-flex {
-    display: flex;
+  display: flex;
 }
 .flex-row {
-    flex-direction: row;
+  flex-direction: row;
 }
-.flex-column{
-    flex-direction: column;
+.flex-column {
+  flex-direction: column;
 }
 .total {
-    text-align: center;
+  text-align: center;
 }
 .cap {
-    text-transform: capitalize;
+  text-transform: capitalize;
+}
+.loading-icon {
+  margin: 20px 0;
+  margin-bottom: 20px;
+  padding: 30px 50px;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
 }
