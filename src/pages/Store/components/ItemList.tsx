@@ -11,6 +11,7 @@ const api = 'https://reqres.in/api/product';
 export const ItemList = (props: any) => {
   const { addToCart } = props;
   const [paging, setPaging] = useState(1);
+  const [list,setList] = useState(data);
   const { data, error, loading } = useRequest({
     url: api,
     params: {
@@ -22,9 +23,8 @@ export const ItemList = (props: any) => {
     }
     
   });
-  const [list,setList] = useState(data)
+  useRequest(loadMoreData, {refreshDeps: [paging]})
   function loadMoreData() {
-    setPaging(paging + 1)
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve(
@@ -41,6 +41,7 @@ export const ItemList = (props: any) => {
       }, 1000);
     });
   }
+
   if (error) {
     return <div>Can't process</div>;
   }
@@ -55,7 +56,7 @@ export const ItemList = (props: any) => {
   
   return (
     <div>
-      <Button onClick={() => loadMoreData()}>Load more</Button>
+      <Button onClick={() => setPaging(paging + 1)}>Load more</Button>
       <Table dataSource={list ?? data} rowKey={(key) => key.id} bordered>
         <Column title="Id" dataIndex="id" responsive={['sm']} />
         <Column title="Name" dataIndex="name" responsive={['md']} className="cap" />
