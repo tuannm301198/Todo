@@ -1,6 +1,5 @@
 import '../styles.css';
-import request from 'umi-request';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRequest } from '@umijs/hooks';
 import { Table, Button, Spin } from 'antd';
 
@@ -11,14 +10,13 @@ const api = 'https://reqres.in/api/product';
 export const ItemList = (props: any) => {
   const { addToCart } = props;
   const [paging, setPaging] = useState(1);
-
   const { data, error, loading } = useRequest({
     url: api,
     params: {
       page: paging,
     },
   },{
-    refreshDeps: [paging]
+    refreshDeps: [paging],
   });
  
   if (error) {
