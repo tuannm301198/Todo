@@ -1,12 +1,13 @@
 import { useReducer } from 'react';
 import { ItemList } from './components/ItemList';
 import './styles.css';
-// import { useRequest } from '@umijs/hooks';
+import {useState} from 'react'
 import request from 'umi-request';
-import { Table, Typography, Button, message } from 'antd';
+import Highlighter from 'react-highlight-words'
+import { Table, Typography, Button, message, Input, Space } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
 const url = 'https://reqres.in/api/items/';
 const { Text } = Typography;
-const { Column } = Table;
 export const ACTION = {
   ADD_TO_CART: 'add_to_cart',
   REMOVE_FROM_CART: 'remove_from_cart',
@@ -29,6 +30,7 @@ function CartReducer(state: any, action: { type: string; payload: any }) {
       return state;
   }
 }
+
 interface typeOf {
   idx: number;
   id: number;
@@ -70,36 +72,138 @@ export function addToCart(product: typeOf, state: Array<{ id: number; quantity: 
   } else {
     updatedCart[updatedCartIndex].quantity++;
   }
-  request(
-    url,
-    { method: 'post', data: { id: product.id, name: product.name, year: product.price } },
-    {
-      headers: { 'Content-Type': 'text / html' },
-    },
-  ).catch((err) => alert(err));
+  request(url, {
+    method: 'post',
+    data: { id: product.id, name: product.name, year: product.price },
+    headers: { 'Content-Type': 'text / html' },
+  }).catch((err) => alert(err));
   return updatedCart;
 }
 
 function removeFromCart(product: typeOf, state: Array<{ id: number; quantity: number }>) {
-  request(url, { method: 'delete', params: product.id }).catch((err) => {
+  request(url, { method: 'delete', params: { id: product.id } }).catch((err) => {
     alert(err);
   });
   message.warn(`Removed ${product.name.toUpperCase()} from cart`);
   return state.filter((item) => item.id !== product.id);
 }
-// async function getAction(state){
-//   return new Promise((resolve) => {
-//     setTimeout(() => {
-//       resolve(CartReducer(state));
-//     }, 5000);
-//   });
-// }
 
 //main page
 const Store = () => {
   const [cart, dispatch] = useReducer(CartReducer, []);
-  // const {data,loading,error} = useRequest(() => getAction(cart), {refreshDeps: [cart]})
+  const [searchText, setSearchText] = useState('');
+  const [searchedColumn, setSearchedColumn] = useState('');
+  const columns = [
+    {
+      title: 'Id',
+      dataIndex: 'id',
+      responsive: ['sm'],
+    },
+    {
+      title: 'Name',
+      dataIndex: 'name',
+      responsive: ['md'],
+      className: 'cap',
+      ...getColumnSearchProps('name'),
+    },
+    {
+      title: 'Price',
+      dataIndex: 'year',
+      responsive: ['sm'],
+    },
+    {
+      title: 'Quantity',
+      dataIndex: 'quantity',
+    },
+    {
+      title: 'Action',
+      key: 'action',
+      render: (text: any, record: any, index: number) => (
+        <>
+          <Button onClick={() => increment({ id: text.id, idx: index })}>+</Button>
+          <Button onClick={() => decrement({ id: text.id, idx: index })}>-</Button>
+          <Button onClick={() => removeFromCart({ id: text.id, name: text.name })}>Remove</Button>
+        </>
+      ),
+    },
+  ];
 
+  const getColumnSearchProps = (dataIndex) => ({
+    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+      <div style={{ padding: 8 }}>
+        <Input
+          ref={(node) => {
+            searchInput = node;
+          }}
+          placeholder={`Search ${dataIndex}`}
+          value={selectedKeys[0]}
+          onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+          style={{ width: 188, marginBottom: 8, display: 'block' }}
+        />
+        <Space>
+          <Button
+            type="primary"
+            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+            icon={<SearchOutlined />}
+            size="small"
+            style={{ width: 90 }}
+          >
+            Search
+          </Button>
+          <Button onClick={() => handleReset(clearFilters)} size="small" style={{ width: 90 }}>
+            Reset
+          </Button>
+          <Button
+            type="link"
+            size="small"
+            onClick={() => {
+              confirm({ closeDropdown: false });
+              this.setState({
+                searchText: selectedKeys[0],
+                searchedColumn: dataIndex,
+              });
+            }}
+          >
+            Filter
+          </Button>
+        </Space>
+      </div>
+    ),
+    filterIcon: (filtered) => (
+      <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
+    ),
+    onFilter: (value, record) =>
+      record[dataIndex]
+        ? record[dataIndex].toString().toLowerCase().includes(value.toLowerCase())
+        : '',
+    onFilterDropdownVisibleChange: (visible) => {
+      if (visible) {
+        setTimeout(() => searchInput.select(), 100);
+      }
+    },
+    render: (text) =>
+      searchedColumn === dataIndex ? (
+        <Highlighter
+          highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
+          searchWords={[searchText]}
+          autoEscape
+          textToHighlight={text ? text.toString() : ''}
+        />
+      ) : (
+        text
+      ),
+  });
+  const handleSearch = (selectedKeys, confirm, dataIndex) => {
+    confirm();
+    setSearchText(selectedKeys[0]);
+    setSearchedColumn(dataIndex)
+  };
+
+  const handleReset = (clearFilters) => {
+    clearFilters();
+    setSearchText('')
+  };
   function addToCart(product: object) {
     dispatch({ type: ACTION.ADD_TO_CART, payload: product });
   }
@@ -122,6 +226,7 @@ const Store = () => {
         <ItemList addToCart={addToCart} />
         <div>
           <Table
+            columns={columns}
             locale={{ emptyText: 'Empty Cart' }}
             dataSource={cart}
             bordered
@@ -142,35 +247,7 @@ const Store = () => {
                 </>
               );
             }}
-          >
-            <Column title="Id" dataIndex="id" />
-            <Column title="Name" dataIndex="name" className="cap" />
-            <Column title="Price" dataIndex="price" />
-            <Column title="Quantity" dataIndex="quantity" />
-            <Column
-              title="Action"
-              key="action"
-              render={(text, record, index) => (
-                <Button onClick={() => increment({ id: text.id, idx: index })}>+</Button>
-              )}
-            />
-            <Column
-              title="Action"
-              key="action"
-              render={(text, record, index) => (
-                <Button onClick={() => decrement({ id: text.id, idx: index })}>-</Button>
-              )}
-            />
-            <Column
-              title="Action"
-              key="action"
-              render={(text) => (
-                <Button onClick={() => removeFromCart({ id: text.id, name: text.name })}>
-                  Remove
-                </Button>
-              )}
-            />
-          </Table>
+          ></Table>
         </div>
       </div>
     </div>
