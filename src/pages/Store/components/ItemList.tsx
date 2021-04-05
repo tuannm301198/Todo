@@ -46,15 +46,7 @@ export const ItemList = (props: any) => {
     });
   }
 
-  const handleSearch = (selectedKeys, confirm) => {
-    confirm();
-    setSearchText(selectedKeys[0])
-  };
-
-  const handleReset = (clearFilters) => {
-    clearFilters();
-    setSearchTexT('');
-  };
+ 
 
   const columns = [
     {
@@ -63,44 +55,31 @@ export const ItemList = (props: any) => {
       responsive: ['sm'],
     },
     {
-      title: 'Name',
       dataIndex: 'name',
       responsive: ['md'],
       className: 'cap',
-      title: (
-       <></>
-      ),
+      title: 'Name',
       filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
         <div style={{ padding: 8 }}>
           <Input
             placeholder={`Search`}
             value={selectedKeys[0]}
             onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-            onPressEnter={() => handleSearch(selectedKeys, confirm)}
+            onPressEnter={() => confirm()}
             style={{ width: 188, marginBottom: 8, display: 'block' }}
           />
           <Space>
             <Button
               type="primary"
-              onClick={() => handleSearch(selectedKeys, confirm)}
+              onClick={() => confirm()}
               icon={<SearchOutlined />}
               size="small"
               style={{ width: 90 }}
             >
               Search
             </Button>
-            <Button onClick={() => handleReset(clearFilters)} size="small" style={{ width: 90 }}>
+            <Button onClick={() => clearFilters()} size="small" style={{ width: 90 }}>
               Reset
-            </Button>
-            <Button
-              type="link"
-              size="small"
-              onClick={() => {
-                confirm({ closeDropdown: false });
-                setSearchText(selectedKeys[0]);
-              }}
-            >
-              Filter
             </Button>
           </Space>
         </div>
