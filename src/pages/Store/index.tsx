@@ -1,10 +1,8 @@
-import { useReducer, useState } from 'react';
+import { useReducer} from 'react';
 import { ItemList } from './components/ItemList';
 import './styles.css';
 import request from 'umi-request';
-import { Table, Typography, Button, message, Input, Space } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
-import Highlighter from 'react-highlight-words'
+import { Table, Typography, Button, message} from 'antd';
 const url = 'https://reqres.in/api/items/';
 const { Text } = Typography;
 export const ACTION = {
@@ -90,7 +88,7 @@ function removeFromCart(product: typeOf, state: Array<{ id: number; quantity: nu
 //main page
 const Store = () => {
   const [cart, dispatch] = useReducer(CartReducer, []);
-  const columns = [
+  const columns: any = [
     {
       title: 'Id',
       dataIndex: 'id',
@@ -125,8 +123,6 @@ const Store = () => {
     },
   ];
 
-  
-  
   function addToCart(product: object) {
     dispatch({ type: ACTION.ADD_TO_CART, payload: product });
   }

@@ -5,14 +5,16 @@ import { useRequest } from '@umijs/hooks';
 import { Table, Button, Spin, Input, Space } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 
-import Highlighter from 'react-highlight-words';
 const api = 'https://reqres.in/api/product';
-
+interface FilterDropdownProps {
+  setSelectedKeys: (selectedKeys: React.Key[]) => void;
+  selectedKeys: React.Key[];
+  confirm: (param?: boolean) => void;
+  clearFilters?: () => void;
+}
 // list of item
 export const ItemList = (props: any) => {
   const { addToCart } = props;
-  const [searchText, setSearchText] = useState('');
-
   const [paging, setPaging] = useState(1);
   const { data, error, loading } = useRequest({
     url: api,
@@ -46,9 +48,7 @@ export const ItemList = (props: any) => {
     });
   }
 
- 
-
-  const columns = [
+  const columns: any = [
     {
       title: 'Id',
       dataIndex: 'id',
@@ -59,7 +59,7 @@ export const ItemList = (props: any) => {
       responsive: ['md'],
       className: 'cap',
       title: 'Name',
-      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }:FilterDropdownProps) => (
         <div style={{ padding: 8 }}>
           <Input
             placeholder={`Search`}
@@ -84,10 +84,10 @@ export const ItemList = (props: any) => {
           </Space>
         </div>
       ),
-      filterIcon: (filtered) => (
+      filterIcon: (filtered: boolean) => (
         <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
       ),
-      onFilter: (value, record) =>
+      onFilter: (value: string, record: any) =>
         record.name ? record.name.toString().toLowerCase().includes(value.toLowerCase()) : '',
     },
     {
@@ -98,7 +98,7 @@ export const ItemList = (props: any) => {
     {
       title: 'Action',
       key: 'action',
-      render: (text) => (
+      render: (text: any) => (
         <Button
           onClick={() => {
             addToCart({
