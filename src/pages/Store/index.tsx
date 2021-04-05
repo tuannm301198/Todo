@@ -1,11 +1,10 @@
-import { useReducer } from 'react';
+import { useReducer, useState } from 'react';
 import { ItemList } from './components/ItemList';
 import './styles.css';
-import {useState} from 'react'
 import request from 'umi-request';
-import Highlighter from 'react-highlight-words'
 import { Table, Typography, Button, message, Input, Space } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
+import Highlighter from 'react-highlight-words'
 const url = 'https://reqres.in/api/items/';
 const { Text } = Typography;
 export const ACTION = {
@@ -104,7 +103,7 @@ const Store = () => {
       dataIndex: 'name',
       responsive: ['md'],
       className: 'cap',
-      ...getColumnSearchProps('name'),
+      
     },
     {
       title: 'Price',
@@ -133,7 +132,7 @@ const Store = () => {
       <div style={{ padding: 8 }}>
         <Input
           ref={(node) => {
-            searchInput = node;
+            let searchInput = node;
           }}
           placeholder={`Search ${dataIndex}`}
           value={selectedKeys[0]}
@@ -159,10 +158,8 @@ const Store = () => {
             size="small"
             onClick={() => {
               confirm({ closeDropdown: false });
-              this.setState({
-                searchText: selectedKeys[0],
-                searchedColumn: dataIndex,
-              });
+              setSearchText(selectedKeys[0]);
+              setSearchedColumn(dataIndex)
             }}
           >
             Filter
@@ -204,6 +201,7 @@ const Store = () => {
     clearFilters();
     setSearchText('')
   };
+  
   function addToCart(product: object) {
     dispatch({ type: ACTION.ADD_TO_CART, payload: product });
   }
