@@ -88,6 +88,7 @@ function removeFromCart(product: typeOf, state: Array<{ id: number; quantity: nu
 //main page
 const Store = () => {
   const [cart, dispatch] = useReducer(CartReducer, []);
+  
   const columns: any = [
     {
       title: 'Id',

@@ -6,16 +6,20 @@ import { Table, Button, Spin, Input, Space } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 
 const api = 'https://reqres.in/api/product';
+
 interface FilterDropdownProps {
   setSelectedKeys: (selectedKeys: React.Key[]) => void;
   selectedKeys: React.Key[];
   confirm: (param?: boolean) => void;
   clearFilters?: () => void;
 }
+
 // list of item
 export const ItemList = (props: any) => {
   const { addToCart } = props;
+
   const [paging, setPaging] = useState(1);
+
   const { data, error, loading } = useRequest({
     url: api,
     params: {
@@ -27,8 +31,11 @@ export const ItemList = (props: any) => {
     }
     
   });
+
   const [list,setList] = useState(data);
+
   useRequest(loadMoreData, {refreshDeps: [paging]})
+
   function loadMoreData() {
     return new Promise((resolve) => {
       setTimeout(() => {
