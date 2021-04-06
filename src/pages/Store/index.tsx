@@ -1,8 +1,8 @@
-import { useReducer} from 'react';
+import { useReducer } from 'react';
 import { ItemList } from './components/ItemList';
 import './styles.css';
 import request from 'umi-request';
-import { Table, Typography, Button, message} from 'antd';
+import { Table, Typography, Button, message } from 'antd';
 const url = 'https://reqres.in/api/items/';
 const { Text } = Typography;
 export const ACTION = {
@@ -34,11 +34,13 @@ interface typeOf {
   quantity: number;
   name: string;
   price: number;
+  payload: any;
+  type: string;
 }
 
 //handle logic
 
-function decrement(product: typeOf, state: Array<{ id: number; quantity: number }>) {
+function decrement(product: typeOf, state: Array<typeOf>) {
   const updatedCart = [...state];
   request
     .patch(url, { data: { quantity: updatedCart[product.idx].quantity } })
@@ -51,7 +53,7 @@ function decrement(product: typeOf, state: Array<{ id: number; quantity: number 
   }
 }
 
-function increment(index: number, state: Array<{ id: number; quantity: number }>) {
+function increment(index: number, state: Array<typeOf>) {
   const updatedCart = [...state];
   request
     .patch(url, { data: { quantity: updatedCart[index].quantity } })
@@ -60,7 +62,7 @@ function increment(index: number, state: Array<{ id: number; quantity: number }>
   return updatedCart;
 }
 
-export function addToCart(product: typeOf, state: Array<{ id: number; quantity: number }>) {
+export function addToCart(product: typeOf, state: Array<typeOf>) {
   const updatedCart = [...state];
   const updatedCartIndex = updatedCart.findIndex((item) => item.id === product.id);
   if (updatedCartIndex < 0) {
@@ -77,7 +79,7 @@ export function addToCart(product: typeOf, state: Array<{ id: number; quantity: 
   return updatedCart;
 }
 
-function removeFromCart(product: typeOf, state: Array<{ id: number; quantity: number }>) {
+function removeFromCart(product: typeOf, state: Array<typeOf>) {
   request(url, { method: 'delete', params: { id: product.id } }).catch((err) => {
     alert(err);
   });
@@ -88,7 +90,7 @@ function removeFromCart(product: typeOf, state: Array<{ id: number; quantity: nu
 //main page
 const Store = () => {
   const [cart, dispatch] = useReducer(CartReducer, []);
-  
+
   const columns: any = [
     {
       title: 'Id',
@@ -100,7 +102,6 @@ const Store = () => {
       dataIndex: 'name',
       responsive: ['md'],
       className: 'cap',
-      
     },
     {
       title: 'Price',
@@ -167,7 +168,7 @@ const Store = () => {
                 </>
               );
             }}
-          ></Table>
+          />
         </div>
       </div>
     </div>
