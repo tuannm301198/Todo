@@ -137,7 +137,7 @@ export const ItemList = (props: any) => {
           {loadingMore ? "Loading more" : "Click to load more"}
         </Button>
       )}
-
+      <span style={{float: "right"}}>Total data: {data.total}</span>
       <Table dataSource={data.list} rowKey={(key) => key.id} columns={columns} bordered />
     </div>
   );
