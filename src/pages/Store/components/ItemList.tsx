@@ -24,7 +24,7 @@ export const ItemList = (props: any) => {
     // setPaging(paging + 1);
     let dataSource = await request(api, {
       params: {
-        page: paging,
+        // page: paging,
         per_page: 12
       },
     });
@@ -40,9 +40,9 @@ export const ItemList = (props: any) => {
     });
   }
 
-  const { data, error, loading, loadMore, loadingMore, noMore } = useRequest((d) => getList(6, d?.list?.length || 0), {
+  const { data, error, loading, loadMore, loadingMore, noMore } = useRequest((d) => getList(3, d?.list?.length || 0), {
     loadMore: true,
-    isNoMore: d => (d? d.list.length >= d.total: false)
+    isNoMore: d => (d? d.list.length >= d.total : false),
   });
 
   const columns: any = [
@@ -134,7 +134,7 @@ export const ItemList = (props: any) => {
         <span>No more data</span>
       ) : (
         <Button onClick={loadMore} loading={loadingMore}>
-          Load more
+          {loadingMore ? "Loading more" : "Click to load more"}
         </Button>
       )}
 
