@@ -18,27 +18,31 @@ interface FilterDropdownProps {
 export const ItemList = (props: any) => {
   const { addToCart } = props;
 
-  const [paging, setPaging] = useState(1);
+  // const [paging, setPaging] = useState(1);
 
-  async function getList() {
-    setPaging(paging + 1);
+  async function getList(pageSize, offset) {
+    // setPaging(paging + 1);
     let dataSource = await request(api, {
       params: {
         page: paging,
+        per_page: 12
       },
     });
-
+    console.log(dataSource);
+    
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve({
-          list: dataSource.data,
+          list: dataSource.data.slice(offset, offset + pageSize),
+          total: dataSource.total
         });
       }, 1000);
     });
   }
 
-  const { data, error, loading, loadMore, loadingMore } = useRequest(() => getList(), {
+  const { data, error, loading, loadMore, loadingMore, noMore } = useRequest((d) => getList(6, d?.list?.length || 0), {
     loadMore: true,
+    isNoMore: d => (d? d.list.length >= d.total: false)
   });
 
   const columns: any = [
@@ -126,9 +130,14 @@ export const ItemList = (props: any) => {
 
   return (
     <div>
-      <Button onClick={loadMore} loading={loadingMore}>
-        Load more
-      </Button>
+      {noMore ? (
+        <span>No more data</span>
+      ) : (
+        <Button onClick={loadMore} loading={loadingMore}>
+          Load more
+        </Button>
+      )}
+
       <Table dataSource={data.list} rowKey={(key) => key.id} columns={columns} bordered />
     </div>
   );
