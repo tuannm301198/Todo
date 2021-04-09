@@ -12,6 +12,7 @@ interface FilterDropdownProps {
   confirm: (param?: boolean) => void;
   clearFilters?: () => void;
 }
+
 interface Result {
   total: number;
   list: Array<{ id: number; name: string; year: number; first_name: string; email: string }>;
@@ -19,14 +20,13 @@ interface Result {
 // list of item
 export const ItemList = (props: any) => {
   const { addToCart } = props;
-
   const getList = async ({ pageSize, offset }: any): Promise<Result> => {
     let dataSource = await request(api, {
       params: {
         per_page: 12,
       },
     });
- 
+
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve({

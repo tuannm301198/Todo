@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Pagination, Button } from 'antd';
+import { Pagination, Button, Select } from 'antd';
 import request from 'umi-request';
 
+const {Option} = Select
 const api = 'https://reqres.in/api/users';
 const Promise = () => {
   const [data, setData] = useState([]);
@@ -10,18 +11,25 @@ const Promise = () => {
   const [minPerPage, setMinPerPage] = useState(0);
   const [maxPerPage, setMaxPerPage] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
-
+  const [requestPage, setRequestPage] = useState(1);
+  const [apiDataLength, setApiDataLength] = useState(0)
   useEffect(async () => {
     await request(api, {
       params: {
-        per_page: 12,
+        page: requestPage,
       },
     }).then((res) => {
-      setData(res.data);
-      setDataLength(res.data.length);
+      setData(prev => prev.concat(res.data));
+      
+      setDataLength(prev => prev + res.data.length);
       setMaxPerPage(perPage);
+      setApiDataLength(res.total)
+      
     });
-  }, []);
+  }, [requestPage]);
+  useEffect(() => {
+    setMaxPerPage(perPage)
+  },[perPage])
 
   const onChange = (page: any) => {
     setCurrentPage(page);
@@ -31,14 +39,25 @@ const Promise = () => {
 
   return (
     <div>
-      <Button
-        style={{ visibility: currentPage == 1 ? 'visible' : 'hidden' }}
+      <Button disabled={dataLength >= apiDataLength}
         onClick={() => {
-          setPerPage(perPage + 2);
+          setRequestPage(requestPage + 1);
         }}
       >
         Load more
       </Button>
+      <Select
+        defaultValue={2}
+        onChange={(e) => {
+          setPerPage(e);
+        }}
+      >
+        <Option value={2}>2</Option>
+        <Option value={3}>3</Option>
+        <Option value={4}>4</Option>
+        <Option value={5}>5</Option>
+        <Option value={6}>6</Option>
+      </Select>
       {data.map(
         (item: any, idx) =>
           idx >= minPerPage &&
@@ -48,7 +67,6 @@ const Promise = () => {
             </div>
           ),
       )}
-
       <Pagination
         current={currentPage}
         onChange={onChange}
