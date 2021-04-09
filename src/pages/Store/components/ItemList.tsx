@@ -1,11 +1,11 @@
 import '../styles.css';
 import request from 'umi-request';
-import { useState } from 'react';
 import { useRequest } from '@umijs/hooks';
 import { Table, Button, Spin, Input, Space } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 
 const api = 'https://reqres.in/api/product';
+const api2 = 'https://reqres.in/api/users';
 
 interface FilterDropdownProps {
   setSelectedKeys: (selectedKeys: React.Key[]) => void;
@@ -13,38 +13,64 @@ interface FilterDropdownProps {
   confirm: (param?: boolean) => void;
   clearFilters?: () => void;
 }
-
+interface Result {
+  total: number;
+  list: Array<{ id: number; name: string; year: number; first_name: string; email: string }>;
+  list2: Array<{ id: number; first_name: string; last_name: string }>;
+}
 // list of item
 export const ItemList = (props: any) => {
   const { addToCart } = props;
 
-  // const [paging, setPaging] = useState(1);
-
-  async function getList(pageSize, offset) {
-    // setPaging(paging + 1);
+  const getList = async ({ pageSize, offset }: any): Promise<Result> => {
     let dataSource = await request(api, {
       params: {
-        // page: paging,
-        per_page: 12
+        per_page: 12,
       },
     });
-    console.log(dataSource);
-    
+    // let dataSource2 = await request(api2, {
+    //   params: {
+    //     per_page: 12,
+    //   },
+    // });
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve({
           list: dataSource.data.slice(offset, offset + pageSize),
-          total: dataSource.total
+          // list2: dataSource2.data.slice(offset, offset + pageSize),
+          total: dataSource.total,
         });
       }, 1000);
     });
-  }
+  };
 
-  const { data, error, loading, loadMore, loadingMore, noMore } = useRequest((d) => getList(3, d?.list?.length || 0), {
-    loadMore: true,
-    isNoMore: d => (d? d.list.length >= d.total : false),
-  });
+  const { data, error, loading, loadMore, loadingMore, noMore } = useRequest(
+    (d: Result | undefined) => getList({ pageSize: 4, offset: d?.list?.length || 0 }),
+    { 
+      loadMore: true,
+      isNoMore: (d) => (d ? d.list.length >= d.total : false),
+    },
+  );
+  console.log(data);
 
+  const columns2: any = [
+    {
+      title: 'mail',
+      dataIndex: 'email',
+      responsive: ['sm'],
+    },
+    {
+      title: 'FN',
+      dataIndex: 'first_name',
+      responsive: ['sm'],
+    },
+    {
+      title: 'LN',
+      dataIndex: 'last_name',
+      responsive: ['sm'],
+    },
+  ];
+  
   const columns: any = [
     {
       title: 'Id',
@@ -134,11 +160,12 @@ export const ItemList = (props: any) => {
         <span>No more data</span>
       ) : (
         <Button onClick={loadMore} loading={loadingMore}>
-          {loadingMore ? "Loading more" : "Click to load more"}
+          {loadingMore ? 'Loading more' : 'Click to load more'}
         </Button>
       )}
-      <span style={{float: "right"}}>Total data: {data.total}</span>
+      <span style={{ float: 'right' }}>Total data: {data.total}</span>
       <Table dataSource={data.list} rowKey={(key) => key.id} columns={columns} bordered />
+      <Table dataSource={data.list2} rowKey={(key) => key.id} columns={columns2} bordered />
     </div>
   );
 };
