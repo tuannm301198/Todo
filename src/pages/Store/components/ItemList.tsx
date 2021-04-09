@@ -5,7 +5,6 @@ import { Table, Button, Spin, Input, Space } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 
 const api = 'https://reqres.in/api/product';
-const api2 = 'https://reqres.in/api/users';
 
 interface FilterDropdownProps {
   setSelectedKeys: (selectedKeys: React.Key[]) => void;
@@ -16,7 +15,6 @@ interface FilterDropdownProps {
 interface Result {
   total: number;
   list: Array<{ id: number; name: string; year: number; first_name: string; email: string }>;
-  list2: Array<{ id: number; first_name: string; last_name: string }>;
 }
 // list of item
 export const ItemList = (props: any) => {
@@ -28,16 +26,11 @@ export const ItemList = (props: any) => {
         per_page: 12,
       },
     });
-    // let dataSource2 = await request(api2, {
-    //   params: {
-    //     per_page: 12,
-    //   },
-    // });
+ 
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve({
           list: dataSource.data.slice(offset, offset + pageSize),
-          // list2: dataSource2.data.slice(offset, offset + pageSize),
           total: dataSource.total,
         });
       }, 1000);
@@ -53,24 +46,10 @@ export const ItemList = (props: any) => {
   );
   console.log(data);
 
-  const columns2: any = [
-    {
-      title: 'mail',
-      dataIndex: 'email',
-      responsive: ['sm'],
-    },
-    {
-      title: 'FN',
-      dataIndex: 'first_name',
-      responsive: ['sm'],
-    },
-    {
-      title: 'LN',
-      dataIndex: 'last_name',
-      responsive: ['sm'],
-    },
-  ];
-  
+    const clear = (clearFilter: any) => {
+      clearFilter()
+    }
+
   const columns: any = [
     {
       title: 'Id',
@@ -106,7 +85,7 @@ export const ItemList = (props: any) => {
             >
               Search
             </Button>
-            <Button onClick={() => clearFilters()} size="small" style={{ width: 90 }}>
+            <Button onClick={() => clear(clearFilters)} size="small" style={{ width: 90 }}>
               Reset
             </Button>
           </Space>
@@ -128,7 +107,7 @@ export const ItemList = (props: any) => {
       key: 'action',
       render: (text: any) => (
         <Button
-          onClick={() => {
+          onClick={() => {            
             addToCart({
               id: text.id,
               name: text.name,
@@ -136,7 +115,7 @@ export const ItemList = (props: any) => {
             });
           }}
         >
-          Add{' '}
+          Add
         </Button>
       ),
     },
@@ -163,9 +142,8 @@ export const ItemList = (props: any) => {
           {loadingMore ? 'Loading more' : 'Click to load more'}
         </Button>
       )}
-      <span style={{ float: 'right' }}>Total data: {data.total}</span>
-      <Table dataSource={data.list} rowKey={(key) => key.id} columns={columns} bordered />
-      <Table dataSource={data.list2} rowKey={(key) => key.id} columns={columns2} bordered />
+      <span style={{ float: 'right' }}>Total data: {data?.total}</span>
+      <Table dataSource={data?.list} rowKey={(key) => key.id} columns={columns} bordered />
     </div>
   );
 };
