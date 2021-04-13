@@ -2,6 +2,7 @@ import { useEffect, useReducer } from 'react';
 import { Button } from 'antd';
 import request from 'umi-request';
 
+const api = 'https://reqres.in/api/users';
 const initState = {
   data: [],
   dataLength: 0,
@@ -18,28 +19,24 @@ const addMoreReducer = (state, action) => {
       return state;
   }
 };
+
 const addMore = (state, data) => {
   return {
     ...state,
     requestPage: data.requestPage + 1,
   };
 };
+
 const fetchData = (state, data) => {
-  console.log(state);
-
-  const newData = [...state.data];
-  console.log(newData);
-
   return {
     ...state,
-    data: newData.concat(data.data),
+    data: state.data.concat(data.data),
     requestPage: data.page,
     apiDataLength: data.total,
     dataLength: data.per_page,
   };
-  // return newData.data.concat(...state.data);
 };
-const api = 'https://reqres.in/api/users';
+
 const Promise = () => {
   const [state, dispatch] = useReducer(addMoreReducer, initState);
   useEffect(async () => {
@@ -53,7 +50,6 @@ const Promise = () => {
       })
       .catch((err) => alert(err));
   }, [state.requestPage]);
-  console.log(state);
 
   const fetchData = (product) => {
     dispatch({ type: 'FETCH_DATA', payload: product });
@@ -66,7 +62,7 @@ const Promise = () => {
   return (
     <div>
       <Button
-        disabled={state.dataLength >= state.apiDataLength}
+        disabled={state.data.length >= 12}
         onClick={() => {
           addMore(state);
         }}
