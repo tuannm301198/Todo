@@ -39,17 +39,18 @@ const fetchData = (state, data) => {
 
 const Promise = () => {
   const [state, dispatch] = useReducer(addMoreReducer, initState);
+  const { data, requestPage, apiDataLength, dataLength } = state;
   useEffect(async () => {
     await request(api, {
       params: {
-        page: state?.requestPage || 1,
+        page: requestPage || 1,
       },
     })
       .then((res) => {
         fetchData(res);
       })
       .catch((err) => alert(err));
-  }, [state.requestPage]);
+  }, [requestPage]);
 
   const fetchData = (product) => {
     dispatch({ type: 'FETCH_DATA', payload: product });
@@ -62,14 +63,13 @@ const Promise = () => {
   return (
     <div>
       <Button
-        disabled={state.data.length >= 12}
+        disabled={data.length >= 12}
         onClick={() => {
           addMore(state);
         }}
       >
         Load more
       </Button>
-
       {state?.data?.map((item: any) => (
         <div key={item.id}>
           <div>{item.email}</div>
